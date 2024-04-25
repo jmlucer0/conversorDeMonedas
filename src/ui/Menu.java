@@ -11,9 +11,8 @@ public class Menu {
     String monedaDeEntrada;
     String monedaDeSalida;
     double cantidad;
-    String convercion;
+    String conversion;
     String opcionElejida;
-    boolean validar;
     Scanner ingresar = new Scanner(System.in);
     ExchangeRateAPIImpl informacionDeMoneda = new ExchangeRateAPIImpl();
 
@@ -59,9 +58,9 @@ public class Menu {
 
             TasaDeCambio tasaDeCambio = informacionDeMoneda.buscarTasaDeCambio(monedaDeEntrada);
             ConversorDeMonedasImpl conversorDeMonedas = new ConversorDeMonedasImpl();
-            convercion = conversorDeMonedas.convertir(cantidad, monedaDeSalida, tasaDeCambio);
+            conversion = conversorDeMonedas.convertir(cantidad, monedaDeSalida, tasaDeCambio);
 
-            respuesta(opcionElejida, cantidad, convercion);
+            respuesta(opcionElejida, cantidad, conversion);
 
 
         } while (Integer.parseInt(opcionElejida) != 7);
