@@ -4,6 +4,7 @@ import api.IExchangeRateAPI;
 import com.google.gson.Gson;
 import models.TasaDeCambio;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,7 +25,7 @@ public class ExchangeRateAPIImpl implements IExchangeRateAPI {
                     .send(request, HttpResponse.BodyHandlers.ofString());
             TasaDeCambio tasaDeCambio = new Gson().fromJson(response.body(), TasaDeCambio.class);
             return tasaDeCambio;
-        }catch (Exception e){
+        }catch (RuntimeException | IOException | InterruptedException e){
             throw new RuntimeException("No se encontro el tipo de Moneda");
         }
     }

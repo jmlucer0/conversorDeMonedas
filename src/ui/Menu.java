@@ -3,6 +3,7 @@ package ui;
 import api.impl.ExchangeRateAPIImpl;
 import models.TasaDeCambio;
 import servicio.impl.ConversorDeMonedasImpl;
+import validacion.Validador;
 
 import java.util.Scanner;
 
@@ -10,42 +11,60 @@ public class Menu {
     String monedaDeEntrada;
     String monedaDeSalida;
     double cantidad;
-    double convercion;
+    String convercion;
     String opcionElejida;
+    boolean validar;
     Scanner ingresar = new Scanner(System.in);
     ExchangeRateAPIImpl informacionDeMoneda = new ExchangeRateAPIImpl();
 
-    public void menuPrincipal(){
-        String menu = """
-                            Conversor de Monedas
-                
-                **************Menu Principal********************
-                
-                1 - Dolar --> Peso Argentino.
-                2 - Peso Argentino --> Dolar.
-                3 - Dolar --> Real Brasilenio.
-                4 - Real Brasilenio --> Dolar.
-                5 - Dolar --> Peso Colombiano.
-                6 - Peso Colombiano --> Dolar.
-                7 - Salir
-                
-                Elija una Opcion Valida:
-                
-                ************************************************
-                """;
-        System.out.println(menu);
-        opcionElejida = ingresar.nextLine();
-        System.out.println("Ingrese el valor a convertir");
-        cantidad = ingresar.nextDouble();
+    Validador validador = new Validador();
 
-        opcionDeCAmbio(opcionElejida);
-        TasaDeCambio tasaDeCambio = informacionDeMoneda.buscarTasaDeCambio(monedaDeEntrada);
-        ConversorDeMonedasImpl conversorDeMonedas = new ConversorDeMonedasImpl();
-        convercion = conversorDeMonedas.convertir(cantidad, monedaDeSalida, tasaDeCambio);
+    public void menuPrincipal() {
 
-        respuesta(opcionElejida, cantidad, convercion);
+        do {
+            do {
+                String menu = """
+                                    Conversor de Monedas
+                                        
+                        **************Menu Principal********************
+                                        
+                        1 - Dolar --> Peso Argentino.
+                        2 - Peso Argentino --> Dolar.
+                        3 - Dolar --> Real Brasilenio.
+                        4 - Real Brasilenio --> Dolar.
+                        5 - Dolar --> Peso Colombiano.
+                        6 - Peso Colombiano --> Dolar.
+                        7 - Salir
+                                        
+                        Elija una Opcion Valida:
+                                        
+                        ************************************************
+                        """;
+                System.out.println(menu);
+                opcionElejida = ingresar.nextLine();
+
+            }while (!validador.validadorDeMenu(opcionElejida));
+            if(Integer.parseInt(opcionElejida) == 7){
+                break;
+            }
+
+            System.out.println("Ingrese el valor a convertir");
+                try{
+                    cantidad = ingresar.nextDouble();
+                }catch(Exception e){
+                    System.out.println("Debe ingresar un numero");
+                }
+            ingresar = new Scanner(System.in);
+            opcionDeCAmbio(opcionElejida);
+
+            TasaDeCambio tasaDeCambio = informacionDeMoneda.buscarTasaDeCambio(monedaDeEntrada);
+            ConversorDeMonedasImpl conversorDeMonedas = new ConversorDeMonedasImpl();
+            convercion = conversorDeMonedas.convertir(cantidad, monedaDeSalida, tasaDeCambio);
+
+            respuesta(opcionElejida, cantidad, convercion);
 
 
+        } while (Integer.parseInt(opcionElejida) != 7);
     }
 
     public void opcionDeCAmbio(String opcionElejida){
@@ -77,8 +96,8 @@ public class Menu {
         }
     }
 
-    public void respuesta(String opcionElejida, double cantidad, double convercion){
-        switch (opcionElejida){
+    public void respuesta(String opcionElejida, double cantidad, String convercion){
+        switch (opcionElejida) {
             case "1":
                 System.out.println(
                         "Dolar: " + cantidad + " son Pesos Argentinos: " + convercion);
@@ -104,6 +123,5 @@ public class Menu {
                         "Peso Colombiano: " + cantidad + " son Dolar: " + convercion);
                 break;
         }
-
     }
 }
