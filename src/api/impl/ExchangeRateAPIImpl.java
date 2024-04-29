@@ -14,7 +14,9 @@ public class ExchangeRateAPIImpl implements IExchangeRateAPI {
 
     @Override
     public TasaDeCambio buscarTasaDeCambio(String monedaDeEntrada) {
-        URI direccion = URI.create("https://v6.exchangerate-api.com/v6/a91320f887f9cadd4c7224a8/latest/" + monedaDeEntrada);
+        //apikey de exchangerate-api.
+        String apiKey = "a91320f887f9cadd4c7224a8";
+        URI direccion = URI.create("https://v6.exchangerate-api.com/v6/" + apiKey + "/latest/" + monedaDeEntrada);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -26,7 +28,7 @@ public class ExchangeRateAPIImpl implements IExchangeRateAPI {
             TasaDeCambio tasaDeCambio = new Gson().fromJson(response.body(), TasaDeCambio.class);
             return tasaDeCambio;
         }catch (RuntimeException | IOException | InterruptedException e){
-            throw new RuntimeException("No se encontro el tipo de Moneda");
+            throw new RuntimeException("No se encontro el tipo de Moneda.");
         }
     }
 

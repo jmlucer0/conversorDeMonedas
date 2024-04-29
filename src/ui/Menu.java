@@ -5,24 +5,27 @@ import models.TasaDeCambio;
 import servicio.impl.ConversorDeMonedasImpl;
 import validacion.Validador;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
+    boolean errorDeIngreso = false;
     String monedaDeEntrada;
     String monedaDeSalida;
-    double cantidad;
+    double monto;
     String conversion;
     String opcionElejida;
     Scanner ingresar = new Scanner(System.in);
     ExchangeRateAPIImpl informacionDeMoneda = new ExchangeRateAPIImpl();
-
     Validador validador = new Validador();
 
     public void menuPrincipal() {
-
         do {
             do {
                 String menu = """
+                                    
+                         -----------------------------------------------
+                                    
                                     Conversor de Monedas
                                         
                         **************Menu Principal********************
@@ -35,33 +38,41 @@ public class Menu {
                         6 - Peso Colombiano --> Dolar.
                         7 - Salir
                                         
-                        Elija una Opcion Valida:
+                        Elija una Opcion:
                                         
                         ************************************************
                         """;
                 System.out.println(menu);
                 opcionElejida = ingresar.nextLine();
 
+                if(Integer.parseInt(opcionElejida) == 7){
+                    System.out.println("Cerrando Aplicacion...");
+                }
             }while (!validador.validadorDeMenu(opcionElejida));
             if(Integer.parseInt(opcionElejida) == 7){
                 break;
             }
 
-            System.out.println("Ingrese el valor a convertir");
+            do{
+                System.out.println("Ingrese el valor a convertir:");
                 try{
-                    cantidad = ingresar.nextDouble();
-                }catch(Exception e){
-                    System.out.println("Debe ingresar un numero");
+                    monto = ingresar.nextDouble();
+                    errorDeIngreso = false;
+                }catch(NumberFormatException | InputMismatchException e){
+                    System.out.println("Error: Debe ingresar un numero. El numero ingresado no puede ser '0'.");
+                    errorDeIngreso = true;
+                    ingresar = new Scanner(System.in);
                 }
+            }while (errorDeIngreso || monto == 0);
+            //limpio el cache del scanner
             ingresar = new Scanner(System.in);
             opcionDeCAmbio(opcionElejida);
 
             TasaDeCambio tasaDeCambio = informacionDeMoneda.buscarTasaDeCambio(monedaDeEntrada);
             ConversorDeMonedasImpl conversorDeMonedas = new ConversorDeMonedasImpl();
-            conversion = conversorDeMonedas.convertir(cantidad, monedaDeSalida, tasaDeCambio);
+            conversion = conversorDeMonedas.convertir(monto, monedaDeSalida, tasaDeCambio);
 
-            respuesta(opcionElejida, cantidad, conversion);
-
+            respuesta(opcionElejida, monto, conversion);
 
         } while (Integer.parseInt(opcionElejida) != 7);
     }
